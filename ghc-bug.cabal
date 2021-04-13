@@ -21,7 +21,7 @@ library
       base >= 4.7 && < 5
     , text
     , yesod-form
-    , yesod
+    -- , yesod
     , containers
     , iso3166-country-codes
     , classy-prelude

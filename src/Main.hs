@@ -14,8 +14,6 @@ import ClassyPrelude.Yesod
 import Yesod.Form.Bootstrap3
 import Data.ISO3166_CountryCodes
 import qualified Data.Map as Map
-import Data.Text(Text, strip)
-
 
 data ShippingForm = ShippingForm
   { shCustomerName :: Text
@@ -35,33 +33,30 @@ data ShippingForm = ShippingForm
   , shTaxId :: Maybe Text
   -- , shCustomValue ::  Double
   , shServiceCode :: Text
-  , shSave :: Bool
   } deriving Show
 
 data Match = Match
 
 shippingForm :: _ => Maybe ShippingForm 
               -> _Html -> MForm _Handler (FormResult ShippingForm, _Widget)
-shippingForm (shipm)  extra =  do
-    customerName <- mreq textField (f 35 "Customer Name") (ship <&> take 35 . shCustomerName)
+shippingForm ship  extra =  do
+    customerName <- mreq textField "Customer Name" (ship <&> shCustomerName)
     country <- mopt (selectField countryOptions) "Country" (ship <&> shCountry)
-    postalCode <- mreq textField (f 7 "Postal/Zip Code") (ship <&> take 7 . shPostalCode)
-    address1 <- mreq textField (f 35 "Address 1") (ship <&> take 35 . shAddress1)
-    address2 <- mopt textField (f 35 "Address 2") (ship <&> fmap (take 35) . shAddress2)
-    city <- mreq textField (f 35 "City") (ship <&> take 35 . shCity)
-    countyState <- mopt textField (f 35 "County/State") (ship <&> fmap (take 35) . shCountyState)
-    contact <- mreq textField (f 25 "Contact") (ship <&> take 25 . shContact)
-    telephone <- mreq textField (f 15 "Telephone") (ship <&> take 15 .  shTelephone)
-    notificationEmail <- mopt textField (f 35 "Notification Email") (ship <&> fmap (take 35) . shNotificationEmail)
-    notificationText <- mopt textField (f 35 "Notification Text") (ship <&>  fmap (take 35) .shNotificationText)
+    postalCode <- mreq textField "Postal/Zip Code" (ship <&> shPostalCode)
+    address1 <- mreq textField "Address 1" (ship <&> shAddress1)
+    address2 <- mopt textField "Address 2" (ship <&> shAddress2)
+    city <- mreq textField "City" (ship <&> shCity)
+    countyState <- mopt textField "County/State" (ship <&> shCountyState)
+    contact <- mreq textField "Contact" (ship <&> shContact)
+    telephone <- mreq textField "Telephone" (ship <&> shTelephone)
+    notificationEmail <- mopt textField "Notification Email" (ship <&> shNotificationEmail)
+    notificationText <- mopt textField "Notification Text" (ship <&>  shNotificationText)
     noOfPackages <- mreq intField "No of Packages" (ship <&> shNoOfPackages)
     weight <- mreq doubleField "Weight" (ship <&> shWeight)
     generateCustomData <- mreq boolField "Custom Data" (ship <&> shGenerateCustomData)
-    taxId <- mopt textField (f 14 "EORI") (ship <&>  fmap (take 35) .shTaxId)
+    taxId <- mopt textField "EORI" (ship <&>  shTaxId)
     serviceCode <- mreq textField "Service" (ship <&> shServiceCode)
-    save@(_, saveView) <- mreq boolField "Save" (ship <&> shSave)
     let widget = return ()
-        normalize = toLower . strip
 
     return (ShippingForm <$> fst customerName
                  <*> fst country
@@ -79,39 +74,12 @@ shippingForm (shipm)  extra =  do
                  <*> fst generateCustomData
                  <*> fst taxId
                  <*> fst serviceCode
-                 <*> fst save
           , widget)
 
   where
-  ship = truncateForm <$> shipm
   countryOptions = optionsPairs $ map (fanl (p . readableCountryName)) [minBound..maxBound]
-  -- fixed length text
-  f n f = f { fsAttrs=[("maxlength", tshow n)] }
   -- help type inference
   p :: String -> Text
   p = pack
 
 fanl f x= (f x , x)
-
-joinSpaces = id
-    
--- | Truncate each fields of a form to its max length
-truncateForm :: ShippingForm -> ShippingForm
-truncateForm ShippingForm{..} =
-  ShippingForm (take 35 shCustomerName)
-               (shCountry)
-               (take 7 $ joinSpaces shPostalCode)
-               (take 35 shAddress1)
-               (fmap (take 35) shAddress2)
-               (take 35 shCity)
-               (fmap (take 35) shCountyState)
-               (take 25 shContact)
-               (take 15  shTelephone)
-               (fmap (take 35 . joinSpaces) shNotificationEmail)
-               ( fmap (take 35 . joinSpaces)shNotificationText)
-               (shNoOfPackages)
-               (shWeight)
-               (shGenerateCustomData)
-               ( fmap (take 35)shTaxId)
-               (shServiceCode)
-               (shSave)
