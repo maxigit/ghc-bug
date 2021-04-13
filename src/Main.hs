@@ -82,23 +82,23 @@ mhelper v onMissing onFound = do
     return (res, x)
      
 data ShippingForm = ShippingForm
-  { shCustomerName :: Text
+  { shCustomerName :: CountryCode
   , shCountry :: CountryCode -- mandatory but we need to not have a default value
-  , shPostalCode :: Text
-  , shAddress1 :: Text
-  , shAddress2 :: Text
-  , shCity :: Text
-  , shCountyState :: Text
-  , shContact :: Text
-  , shTelephone :: Text
-  , shNotificationEmail :: Text
-  , shNotificationText :: Text
-  , shNoOfPackages :: Text
-  , shWeight :: Text
-  , shGenerateCustomData :: Text
-  , shTaxId :: Text
+  , shPostalCode :: CountryCode
+  , shAddress1 :: CountryCode
+  , shAddress2 :: CountryCode
+  , shCity :: CountryCode
+  , shCountyState :: CountryCode
+  , shContact :: CountryCode
+  , shTelephone :: CountryCode
+  , shNotificationEmail :: CountryCode
+  , shNotificationCountryCode :: CountryCode
+  , shNoOfPackages :: CountryCode
+  , shWeight :: CountryCode
+  , shGenerateCustomData :: CountryCode
+  , shTaxId :: CountryCode
   -- , shCustomValue ::  Double
-  , shServiceCode :: Text
+  , shServiceCode :: CountryCode
   } deriving Show
 
 data Match = Match
@@ -106,22 +106,22 @@ data Match = Match
 shippingForm :: Maybe ShippingForm 
               -> MForm Handler (FormResult ShippingForm)
 shippingForm ship  =  do
-    customerName <- mreq "Customer Name"  -- (ship <&> shCustomerName)
+    customerName <- mcountry "Customer Name"  -- (ship <&> shCustomerName)
     country <- mcountry  "Country"  -- (ship <&> shCountry)
-    postalCode <- mreq "Postal/Zip Code"  -- (ship <&> shPostalCode)
-    address1 <- mreq "Address 1"  -- (ship <&> shAddress1)
-    address2 <- mreq "Address 2"  -- (ship <&> shAddress2)
-    city <- mreq "City"  -- (ship <&> shCity)
-    countyState <- mreq "County/State"  -- (ship <&> shCountyState)
-    contact <- mreq "Contact"  -- (ship <&> shContact)
-    telephone <- mreq "Telephone"  -- (ship <&> shTelephone)
-    notificationEmail <- mreq "Notification Email"  -- (ship <&> shNotificationEmail)
-    notificationText <- mreq "Notification Text"  -- (ship <&>  shNotificationText)
-    noOfPackages <- mreq "No of Packages"  -- (ship <&> shNoOfPackages)
-    weight <- mreq "Weight"  -- (ship <&> shWeight)
-    generateCustomData <- mreq "Custom Data"  -- (ship <&> shGenerateCustomData)
-    taxId <- mreq "EORI"  -- (ship <&>  shTaxId)
-    serviceCode <- mreq "Service"  -- (ship <&> shServiceCode)
+    postalCode <- mcountry "Postal/Zip Code"  -- (ship <&> shPostalCode)
+    address1 <- mcountry "Address 1"  -- (ship <&> shAddress1)
+    address2 <- mcountry "Address 2"  -- (ship <&> shAddress2)
+    city <- mcountry "City"  -- (ship <&> shCity)
+    countyState <- mcountry "County/State"  -- (ship <&> shCountyState)
+    contact <- mcountry "Contact"  -- (ship <&> shContact)
+    telephone <- mcountry "Telephone"  -- (ship <&> shTelephone)
+    notificationEmail <- mcountry "Notification Email"  -- (ship <&> shNotificationEmail)
+    notificationText <- mcountry "Notification Text"  -- (ship <&>  shNotificationText)
+    noOfPackages <- mcountry "No of Packages"  -- (ship <&> shNoOfPackages)
+    weight <- mcountry "Weight"  -- (ship <&> shWeight)
+    generateCustomData <- mcountry "Custom Data"  -- (ship <&> shGenerateCustomData)
+    taxId <- mcountry "EORI"  -- (ship <&>  shTaxId)
+    serviceCode <- mcountry "Service"  -- (ship <&> shServiceCode)
     return (ShippingForm <$> fst  customerName
                  <*> fst  country
                  <*> fst  postalCode
